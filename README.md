@@ -1,2 +1,2 @@
 # spring.boot.jenkins.demo
- Spring Boot Jenkins Demo
+ Demo project for Spring Boot and Jenkins
