@@ -21,4 +21,14 @@ pipeline {
         }
 
     }
+
+    options {
+        buildDiscarder(
+            logRotator(
+                artifactNumToKeepStr: '10',
+                numToKeepStr: '10'
+            )
+        )
+    }
+
 }
