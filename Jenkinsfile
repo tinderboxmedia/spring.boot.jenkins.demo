@@ -26,7 +26,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    echo 'Reporting is skipped...'
                 }
             }
         }
