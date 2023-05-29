@@ -5,19 +5,24 @@ pipeline {
             args '-v /root/.m2:/root/.m2'
         }
     }
+    environment {
+        POM_DIR = "spring.boot.jenkins.demo"
+    }
     stages {
 
         stage('Build') {
             steps {
-                dir("/../"){
-                    sh 'mvn -B -DskipTests clean package'
+                dir("${POM_DIR}"){
+                    sh 'mvn -B -ntp -DskipTests clean package'
                 }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                dir("${POM_DIR}"){
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
