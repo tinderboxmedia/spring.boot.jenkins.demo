@@ -21,7 +21,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir("${POM_DIR}"){
-                    sh 'mvn test'
+                    sh 'mvn -B -ntp test'
                 }
             }
             post {
@@ -33,7 +33,7 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                echo 'Deploying...'
             }
         }
 
