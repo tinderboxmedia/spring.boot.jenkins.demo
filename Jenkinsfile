@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         POM_DIR = "spring.boot.jenkins.demo"
-        NEXUS_URL = ""
+        NEXUS_URL = "nexus:50010/repository/docker-snapshot/"
         NEXUS_CRED = ""
     }
     stages {
@@ -35,9 +35,11 @@ pipeline {
         
         stage('Push') {
             steps {
-                docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
-                    def image = docker.build("my-image:${env.BUILD_ID}")
-                    image.push()
+                script {
+                    docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
+                        def image = docker.build("my-image:${env.BUILD_ID}")
+                        image.push()
+                    }
                 }
             }
         }
