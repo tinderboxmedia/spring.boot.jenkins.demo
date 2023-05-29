@@ -7,8 +7,8 @@ pipeline {
     }
     environment {
         POM_DIR = "spring.boot.jenkins.demo"
-        NEXUS_URL = "nexus:50010/repository/docker-snapshot/"
-        NEXUS_CRED = ""
+        NEXUS_URL = "nexus:50010/repository/docker-snapshots/"
+        NEXUS_CRED = "nexus-credentials"
     }
     stages {
 
