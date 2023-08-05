@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.2-eclipse-temurin-17-alpine'
-            args '-v /root/.m2:/root/.m2'
-        }
-    }
+    agent any
     environment {
         POM_DIR = 'spring.boot.jenkins.demo'
         NEXUS_URL = 'http://nexus:50010/repository/docker-snapshots/'
@@ -13,30 +8,25 @@ pipeline {
     }
     stages {
 
-        stage('Build') {
-            steps {
-                dir("${POM_DIR}"){
-                    sh 'mvn -B -ntp -DskipTests clean package'
+        stage('Package') {
+            agent {
+                docker {
+                    image 'maven:3-eclipse-temurin-17-alpine'
+                    args '-v /root/.m2:/root/.m2'
                 }
             }
-        }
-
-        stage('Test') {
             steps {
-                dir("${POM_DIR}"){
-                    sh 'mvn -B -ntp test'
-                }
-            }
-            post {
-                always {
-                    echo 'Reporting is skipped...'
+                dir("${POM_DIR}") {
+                    sh 'mvn -B -ntp clean package'
                 }
             }
         }
         
         stage('Push') {
+            agent any
             steps {
                 script {
+                    sh "cp ${POM_DIR}/target/*.jar ${WORKSPACE}/target"
                     docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
                         def image = docker.build("${IMAGE_NAME}")
                         image.push("${env.BUILD_ID}")
