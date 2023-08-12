@@ -13,6 +13,7 @@ pipeline {
                 docker {
                     image 'maven:3-eclipse-temurin-17-alpine'
                     args '-v /root/.m2:/root/.m2'
+                    reuseNode true
                 }
             }
             steps {
@@ -25,8 +26,10 @@ pipeline {
         stage('Push') {
             agent any
             steps {
+                dir('target') {
+                    sh "cp ${POM_DIR}/target/*.jar ."
+                }
                 script {
-                    sh "cp ${POM_DIR}/target/*.jar ${WORKSPACE}/target"
                     docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
                         def image = docker.build("${IMAGE_NAME}")
                         image.push("${env.BUILD_ID}")
