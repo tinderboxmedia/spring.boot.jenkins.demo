@@ -1,10 +1,11 @@
 pipeline {
     agent any
     environment {
-        POM_DIR = 'spring.boot.jenkins.demo'
-        NEXUS_URL = 'http://nexus:50010/repository/docker-snapshots/'
+        PROJECT_NAME = readMavenPom().getArtifactId()
+        PROJECT_VERSION = readMavenPom().getVersion()
+        
+        NEXUS_URL = 'http://nexus:9000/repository/docker-images/'
         NEXUS_CRED = 'nexus-credentials'
-        IMAGE_NAME = 'jenkins-demo'
     }
     stages {
 
@@ -16,10 +17,7 @@ pipeline {
                 }
             }
             steps {
-                dir("${POM_DIR}") {
-                    sh 'mvn -B -ntp clean package'
-                    sh "find target -maxdepth 1 -name '*.jar' | xargs -i cp -p '{}' ${WORKSPACE}/target"
-                }
+                sh 'mvn -B -ntp clean package'
             }
         }
         
@@ -28,8 +26,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
-                        def image = docker.build("${IMAGE_NAME}")
-                        image.push("${env.BUILD_ID}")
+                        def image = docker.build("${PROJECT_NAME}")
+                        image.push("${PROJECT_VERSION}")
                     }
                 }
             }
