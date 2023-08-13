@@ -6,6 +6,7 @@ pipeline {
         
         NEXUS_URL = 'http://nexus:9000/repository/docker-images/'
         NEXUS_CRED = 'nexus-credentials'
+        IMAGE_USERNAME = 'aardwolf'
     }
     stages {
 
@@ -26,8 +27,9 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${NEXUS_URL}", "${NEXUS_CRED}") {
-                        def image = docker.build("${PROJECT_NAME}")
+                        def image = docker.build("${IMAGE_USERNAME}/${PROJECT_NAME}")
                         image.push("${PROJECT_VERSION}")
+                        image.push('latest')
                     }
                 }
             }
@@ -36,6 +38,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+            }
+        }
+        
+        stage('Clean') {
+            steps {
+                sh 'docker system prune -af'
             }
         }
 
