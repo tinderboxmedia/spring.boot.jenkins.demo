@@ -6,6 +6,9 @@ pipeline {
         
         NEXUS_URL = 'http://nexus:9000/repository/docker-images/'
         NEXUS_CRED = 'nexus-credentials'
+        
+        STACK_WEBHOOK = 'portainer-stack-webhook'
+        
         IMAGE_USERNAME = 'aardwolf'
     }
     stages {
@@ -35,9 +38,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Update Stack') {
             steps {
-                echo 'Deploying...'
+                withCredentials([string(credentialsId: "${STACK_WEBHOOK}", variable: 'webhook')]) {
+                    sh "curl -X POST ${webhook} --http1.1"
+                }
             }
         }
         
